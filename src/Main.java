@@ -1,33 +1,17 @@
+import controllers.Dao;
 import entity.Student;
+import global.Constant;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-public class Main {
-    private static final SessionFactory SESSION_FACTORY;
-
-    static {
-        Configuration config = new Configuration();
-        config.addAnnotatedClass(Student.class);
-        config.configure("./resources/hibernate.cfg.xml");
-        Properties prop = config.getProperties();
-        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
-        builder.applySettings(prop);
-        ServiceRegistry registry = builder.build();
-        SESSION_FACTORY = config.buildSessionFactory(registry);
-    }
-
+public class Main extends Constant {
     public static void main(String[] args) {
-        create("Alice", 22);
-        create("Bob", 20);
-        create("Charlie", 25);
+        initializeContext();
+        create();
 
         List<Student> students = readAll();
         if (students != null) {
@@ -38,25 +22,18 @@ public class Main {
         SESSION_FACTORY.close();
     }
 
-    public static void create(String name, int age) {
-        Session session = SESSION_FACTORY.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            Student stu = new Student();
-            stu.setName(name);
-            stu.setAge(age);
-            stu.setGender("M");
-            session.save(stu);
-            transaction.commit();
-        } catch (HibernateException ex) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            ex.printStackTrace();
-        } finally {
-            session.close();
+    public static void create() {
+        ArrayList<Student> list = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            Student student = new Student();
+            student.setAge(23 + i);
+            student.setGender("M");
+            student.setName("Ankit " + i);
+            list.add(student);
         }
+        Dao obj = new Dao();
+        boolean sStatus = obj.insertData(list);
+        System.out.println("Save Status - " + sStatus);
     }
 
     public static List<Student> readAll() {
@@ -65,7 +42,7 @@ public class Main {
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
-            students = session.createQuery("FROM entity.Student").list();
+            students = session.createQuery("FROM Student").list();
             transaction.commit();
         } catch (HibernateException ex) {
             if (transaction != null) {
