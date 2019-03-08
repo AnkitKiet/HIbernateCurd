@@ -2,18 +2,21 @@ package entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Table(name = "Student")
 public class Student implements Serializable {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "add_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private int age;
     private String gender;
+   @OneToMany(fetch = FetchType.LAZY,mappedBy = "student")
+    private Set<Address> address;
 
     public int getId() {
         return id;
@@ -47,9 +50,20 @@ public class Student implements Serializable {
         this.gender = gender;
     }
 
+    public Set<Address> getAddress() {
+        return address;
+    }
+
+    public void setAddress(Set<Address> address) {
+        this.address = address;
+    }
+
+
+
     @Override
     public String toString() {
-        return "entity.Student{" +
+        address.parallelStream().forEach(System.out::println);
+        return "Student{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", age=" + age +

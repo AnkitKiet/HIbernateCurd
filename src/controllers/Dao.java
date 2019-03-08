@@ -1,19 +1,18 @@
 package controllers;
 
+import entity.Address;
 import entity.Student;
 import global.Constant;
 import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Dao extends Constant {
 
     public boolean insertData(Object data) {
         boolean status = Boolean.TRUE;
-        Session session = SESSION_FACTORY.openSession();
+
         Transaction transaction = null;
         try {
             //Insert into this if list
@@ -25,9 +24,23 @@ public class Dao extends Constant {
                         transaction.commit();
                     }
                 }
+            }else if(data instanceof Set){
+                Iterator dataHashSet = ((Set) data).iterator();
+
+                while (dataHashSet.hasNext()){
+                    transaction = session.beginTransaction();
+                    session.save(dataHashSet.next());
+                    transaction.commit();
+                }
             }
+
             //Insert below if static data
             else if (data instanceof Student) {
+                transaction = session.beginTransaction();
+                session.save(data);
+                transaction.commit();
+            } else if (data instanceof Address) {
+
                 transaction = session.beginTransaction();
                 session.save(data);
                 transaction.commit();
@@ -38,8 +51,6 @@ public class Dao extends Constant {
             }
             status = Boolean.FALSE;
             ex.printStackTrace();
-        } finally {
-            session.close();
         }
         return status;
     }
