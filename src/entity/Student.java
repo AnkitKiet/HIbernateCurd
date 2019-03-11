@@ -17,7 +17,7 @@ public class Student implements Serializable {
     private String name;
     private int age;
     private String gender;
-   @OneToMany(fetch = FetchType.LAZY,mappedBy = "student")
+   @OneToMany(fetch = FetchType.LAZY,mappedBy = "student",orphanRemoval=true)
     private Set<Address> address;
 
     public int getId() {

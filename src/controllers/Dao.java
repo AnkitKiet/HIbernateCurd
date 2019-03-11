@@ -7,7 +7,10 @@ import global.DbTables;
 import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class Dao extends Constant implements DbTables {
 
@@ -25,10 +28,10 @@ public class Dao extends Constant implements DbTables {
                         transaction.commit();
                     }
                 }
-            }else if(data instanceof Set){
+            } else if (data instanceof Set) {
                 Iterator dataHashSet = ((Set) data).iterator();
 
-                while (dataHashSet.hasNext()){
+                while (dataHashSet.hasNext()) {
                     transaction = session.beginTransaction();
                     session.save(dataHashSet.next());
                     transaction.commit();
@@ -54,6 +57,47 @@ public class Dao extends Constant implements DbTables {
             ex.printStackTrace();
         }
         return status;
+    }
+
+
+    public Object readData(String tableName) {
+        List<Object> responseData = null;
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            responseData = session.createQuery("FROM " + tableName).list();
+            transaction.commit();
+        } catch (HibernateException ex) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            ex.printStackTrace();
+        }
+        return responseData;
+    }
+
+    public boolean deleteData(Class<?> className, int id) {
+        boolean status = Boolean.TRUE;
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            System.out.println("Canonical class name = " + className.getCanonicalName());
+            if ("entity.Student".equalsIgnoreCase(className.getCanonicalName())) {
+                Student stu = (Student) session.get(Student.class,
+                        Integer.valueOf(id));
+
+                session.delete(stu);
+            }
+            transaction.commit();
+        } catch (HibernateException ex) {
+            status = Boolean.FALSE;
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            ex.printStackTrace();
+        }
+        return status;
+
     }
 
 }

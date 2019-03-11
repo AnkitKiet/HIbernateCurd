@@ -2,6 +2,7 @@ import controllers.Dao;
 import entity.Address;
 import entity.Student;
 import global.Constant;
+import global.DbTables;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -14,12 +15,35 @@ import java.util.Set;
 public class Main extends Constant {
     public static void main(String[] args) {
         initializeContext();
-        create();
-
+        Dao objDao = new Dao();
+       // create(objDao);
+        System.out.println("--------------------------------------------------------------Before Delete -------------------------------------------------------------");
+        read(objDao);
+        delete(objDao,6);
+        System.out.println("--------------------------------------------------------------After Delete -------------------------------------------------------------");
+        read(objDao);
         session.close();
     }
 
-    public static void create() {
+    private static void delete(Dao objDao, int id) {
+        objDao.deleteData(Student.class,id);
+    }
+
+    private static void read(Dao objDao) {
+        try {
+            List<Student> students = (List<Student>) objDao.readData(DbTables.student_info);
+            if (students != null) {
+                for (Student stu : students) {
+                    System.out.println(stu);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Exception occurred in reading data " + e.getStackTrace());
+        }
+
+    }
+
+    public static void create(Dao objDao) {
         ArrayList<Student> list = new ArrayList<>();
         Set<Address> addressSet = new HashSet<Address>();
         for (int i = 1; i < 5; i++) {
@@ -34,58 +58,14 @@ public class Main extends Constant {
             student.setAddress(addressSet);
             list.add(student);
         }
-        Dao obj = new Dao();
-        boolean sStatus = obj.insertData(list);
+
+        boolean sStatus = objDao.insertData(list);
         System.out.println("Save Status - " + sStatus);
 
-        boolean aStatus = obj.insertData(addressSet);
+        boolean aStatus = objDao.insertData(addressSet);
         System.out.println("Address Save Status " + aStatus);
-        List<Student> students = readAll();
-        if (students != null) {
-            for (Student stu : students) {
-                System.out.println(stu);
-            }
-        }
-
-
-        session.close();
     }
 
-    public static List<Student> readAll() {
-        List<Student> students = null;
-
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            students = session.createQuery("FROM Student").list();
-            transaction.commit();
-        } catch (HibernateException ex) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            ex.printStackTrace();
-        }
-        return students;
-    }
-
-    public static void delete(int id) {
-        Session session = SESSION_FACTORY.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            Student stu = (Student) session.get(Student.class,
-                    Integer.valueOf(id));
-            session.delete(stu);
-            transaction.commit();
-        } catch (HibernateException ex) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            ex.printStackTrace();
-        } finally {
-            session.close();
-        }
-    }
 
     public static void upate(int id, String name, int age) {
         Session session = SESSION_FACTORY.openSession();
