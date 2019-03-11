@@ -22,18 +22,18 @@ public class Main extends Constant {
     public static void create() {
         ArrayList<Student> list = new ArrayList<>();
         Set<Address> addressSet = new HashSet<Address>();
-         for (int i = 1; i < 5; i++) {
-        Student student = new Student();
-        student.setAge(23+i);
-        student.setGender("M");
-        student.setName("Ankit "+i);
-        Address addObj = new Address();
-        addObj.setAddress("Ankit's Address "+i);
-        addObj.setStudent(student);
-        addressSet.add(addObj);
-        student.setAddress(addressSet);
-        list.add(student);
-         }
+        for (int i = 1; i < 5; i++) {
+            Student student = new Student();
+            student.setAge(23 + i);
+            student.setGender("M");
+            student.setName("Ankit " + i);
+            Address addObj = new Address();
+            addObj.setAddress("Ankit's Address " + i);
+            addObj.setStudent(student);
+            addressSet.add(addObj);
+            student.setAddress(addressSet);
+            list.add(student);
+        }
         Dao obj = new Dao();
         boolean sStatus = obj.insertData(list);
         System.out.println("Save Status - " + sStatus);

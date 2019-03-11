@@ -1,11 +1,13 @@
 package entity;
 
+import global.DbTables;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-@Table(name = "Student")
+@Table(name = DbTables.student_info)
 public class Student implements Serializable {
 
     @Id

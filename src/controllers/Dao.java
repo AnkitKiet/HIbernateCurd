@@ -3,12 +3,13 @@ package controllers;
 import entity.Address;
 import entity.Student;
 import global.Constant;
+import global.DbTables;
 import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
 
 import java.util.*;
 
-public class Dao extends Constant {
+public class Dao extends Constant implements DbTables {
 
     public boolean insertData(Object data) {
         boolean status = Boolean.TRUE;

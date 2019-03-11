@@ -1,9 +1,11 @@
 package entity;
 
+import global.DbTables;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Address")
+@Table(name = DbTables.address_student)
 public class Address {
     @Id
     @Column(name = "id")
